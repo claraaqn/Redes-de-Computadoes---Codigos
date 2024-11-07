@@ -13,10 +13,21 @@ while True:
     mensagem = s.recv(1500)
     if mensagem:
         print(f"Servidor: {mensagem.decode()}")
+    # avisar que o servidor acabou com a conexão
+    if mensagem == b"esc":
+        print("Servidor fechou a conexão")
+        s.close()
+        break
 
 # envia mensagem
     mensagem = input("Você: ")
-    s.send(mensagem.encode())
+    # vai ter uma forma de quebrar a conexão
+    if mensagem == b"esc":
+        print('Cnexão encerrada')
+        s.close()
+        break
+    else:
+        s.send(mensagem.encode())
 
 
 #pegar hora atual

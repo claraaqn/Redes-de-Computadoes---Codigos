@@ -12,10 +12,21 @@ def conexao_cliente(cliente_socket, endereco_cliente):
         # Receber uma mensagem do cliente
         mensagem = cliente_socket.recv(1500)
         print(f'Mensagem recebida do cliente ({endereco_cliente}): {mensagem.decode()}')
+        # avisa que o cliente acabou com a conexão
+        if mensagem == b"esc":
+            print("Cliente deu tchau")
+            cliente_socket.close()
+            break
 
         # enviar mensagens 
         mensagem = input("Servidor: ")
-        cliente_socket.send(mensagem.encode())
+        # vai ter uma forma de quebrar a conexão
+        if mensagem == b"esc":
+            print('Cnexão encerrada')
+            cliente_socket.close()
+            break
+        else:
+            cliente_socket.send(mensagem.encode())
     
     # Fecha a conexão com o cliente
     # cliente_socket.close()
