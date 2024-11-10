@@ -11,10 +11,6 @@ def gerenciar_cliente(cliente_socket, endereco_cliente):
     while True:
         # Receber uma mensagem do cliente
         mensagem = cliente_socket.recv(1500)
-        if mensagem == "esc":
-            print("Cliente deu tchau")
-            cliente_socket.close()
-            break
             
         print(f"Mensagem recebida de {endereco_cliente}: {mensagem.decode()}")
 
@@ -22,11 +18,6 @@ def gerenciar_cliente(cliente_socket, endereco_cliente):
         for outro_cliente in clientes_conectados:
             if outro_cliente != cliente_socket:
                 outro_cliente.send(mensagem)
-
-    # Remove o cliente da lista e fecha a conexão
-    print(f"Conexão encerrada com {endereco_cliente}")
-    clientes_conectados.remove(cliente_socket)
-    cliente_socket.close()
 
 # Cria o socket servidor
 server_socket = socket(AF_INET, SOCK_STREAM)
