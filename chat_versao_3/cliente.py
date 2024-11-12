@@ -31,7 +31,7 @@ def desconectar():
 
 
 janela = tk.Tk()
-janela.title("Chat")
+janela.title("Chat - Versão 3")
 
 area_mensagens = tk.Text(janela)
 area_mensagens.pack()

@@ -11,6 +11,8 @@ def gerenciar_cliente(cliente_socket, endereco_cliente):
     while True:
         # Receber uma mensagem do cliente
         mensagem = cliente_socket.recv(1500)
+        if not mensagem: # ajeitar isso aq
+            break
             
         print(f"Mensagem recebida de {endereco_cliente}: {mensagem.decode()}")
 
