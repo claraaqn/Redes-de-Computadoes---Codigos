@@ -9,40 +9,45 @@ print(f'Tentando conectar ao servidor na porta 8000')
 # Conecta ao servidor
 s.connect(('127.0.0.1', 8000))
 
+# Recebe uma mensagem do servidor
 def receber_mensagens(s):
     while True:
-        mensagem = s.recv(1024).decode()
+        mensagem = s.recv(1500).decode()
         atualizar_interface(mensagem)
 
+# envia mensagem
 def enviar_mensagens():
     mensagem = caixa_texto.get()
     if mensagem:
         s.send(mensagem.encode())
         caixa_texto.delete(0, tk.END)
             
+# muda a interface
 def atualizar_interface(mensagem):
-    area_mensagens.insert(tk.END, mensagem + "\n")
-    area_mensagens.see(tk.END)  # Rola a barra de rolagem para o final
+    mensagens_box.insert(tk.END, mensagem + "\n")
+    mensagens_box.see(tk.END)  # Rola a barra de rolagem para o final
 
+# acaba a conexão
 def desconectar():
     s.close()
     print("Desconectado do servidor.")
     janela.quit()
 
-
+# elementos da interface
 janela = tk.Tk()
-janela.title("Chat - Versão 3")
-
-area_mensagens = tk.Text(janela)
-area_mensagens.pack()
-caixa_texto = tk.Entry(janela)
-caixa_texto.pack()
+janela.title("Cleinte Chat - Versão 2")
+janela.geometry("500x500")
+mensagens_box = tk.Text(janela, state="disabled", wrap="word")
+mensagens_box.pack(padx=10, pady=10, expand=True, fill="both")
+caixa_texto = tk.Entry(janela, width=50)
+caixa_texto.pack(padx=10, pady=5)
 botao_enviar = tk.Button(janela, text="Enviar", command=enviar_mensagens)
-botao_enviar.pack()
+botao_enviar.pack(pady=5)
 botao_desconectar = tk.Button(janela, text="Desconectar", command=desconectar)
 botao_desconectar.pack()
 
 # thread para receber e enviar mensagens
 Thread(target=receber_mensagens, args=(s,)).start()
+Thread(target=enviar_mensagens, args=(s,)).start()
 
 janela.mainloop()
