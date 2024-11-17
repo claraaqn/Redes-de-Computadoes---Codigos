@@ -12,19 +12,27 @@ s.connect(('127.0.0.1', 8000))
 # Recebe uma mensagem do servidor
 def receber_mensagens(s):
     while True:
-        mensagem = s.recv(1500).decode()
-        atualizar_interface(mensagem)
+        try:
+            mensagem = s.recv(1500).decode()
+            atualizar_interface(mensagem)
+        except (ConnectionResetError, ConnectionAbortedError): 
+            print('Conexão encerrada')
+            break
 
 # envia mensagem
 def enviar_mensagens():
     mensagem = caixa_texto.get()
     if mensagem:
         s.send(mensagem.encode())
+        atualizar_interface(f"Você: {mensagem}")
         caixa_texto.delete(0, tk.END)
             
 # muda a interface
 def atualizar_interface(mensagem):
+    mensagens_box.config(state="normal")
     mensagens_box.insert(tk.END, mensagem + "\n")
+    mensagens_box.config(state="disabled")
+    mensagens_box.see(tk.END)
     mensagens_box.see(tk.END)  # Rola a barra de rolagem para o final
 
 # acaba a conexão
@@ -48,6 +56,5 @@ botao_desconectar.pack()
 
 # thread para receber e enviar mensagens
 Thread(target=receber_mensagens, args=(s,)).start()
-Thread(target=enviar_mensagens, args=(s,)).start()
 
 janela.mainloop()

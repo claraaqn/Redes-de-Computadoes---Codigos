@@ -9,17 +9,22 @@ def gerenciar_cliente(cliente_socket, endereco_cliente):
     clientes_conectados.append(cliente_socket)
 
     while True:
-        # Receber uma mensagem do cliente
-        mensagem = cliente_socket.recv(1500)
-        if not mensagem: # ajeitar isso aq
-            break
-            
-        print(f"Mensagem recebida de {endereco_cliente}: {mensagem.decode()}")
+        try:
+            # Receber uma mensagem do cliente
+            mensagem = cliente_socket.recv(1500)
+            if not mensagem: # ajeitar isso aq
+                break
+                
+            print(f"Mensagem recebida de {endereco_cliente}: {mensagem.decode()}")
 
-        # Envia a mensagem para todos os outros clientes conectados
-        for outro_cliente in clientes_conectados:
-            if outro_cliente != cliente_socket:
-                outro_cliente.send(mensagem)
+            # Envia a mensagem para todos os outros clientes conectados
+            for outro_cliente in clientes_conectados:
+                if outro_cliente != cliente_socket:
+                    outro_cliente.send(mensagem)
+        
+        except ConnectionResetError:
+            print(f"Conexão com {endereco_cliente} foi encerrada inesperadamente.")
+            break
 
 # Cria o socket servidor
 server_socket = socket(AF_INET, SOCK_STREAM)
