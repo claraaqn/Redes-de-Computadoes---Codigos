@@ -1,8 +1,10 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 import tkinter as tk
+import os
 
 clientes_conectados = {}
+server_socket = None
 
 # Worker para gerenciar a comunicação com o cliente
 def gerenciar_cliente(cliente_socket, endereco_cliente):
@@ -24,16 +26,22 @@ def gerenciar_cliente(cliente_socket, endereco_cliente):
 # envia mensagem
 def enviar_mensagens():
     destinatario = cliente_selecionado.get()
-    mensagem = caixa_texto.get()
-    if destinatario in clientes_conectados and mensagem:
-        clientes_conectados[destinatario].send(mensagem.encode())
-        caixa_texto.config(state="normal")
-        caixa_texto.insert(tk.END, f"Servidor para {destinatario}: {mensagem}\n")
-        caixa_texto.config(state="disabled")
-        caixa_texto.see(tk.END)
-        caixa_texto.delete(0, tk.END)
+    mensagem = entrada_mensagem.get()
+    
+    if destinatario and mensagem:
+        try:
+            # Converte o destinatário para tuple
+            destinatario_tuple = eval(destinatario)
+            if destinatario_tuple in clientes_conectados:
+                clientes_conectados[destinatario_tuple].send(mensagem.encode())
+                atualizar_interface(f"Servidor para {destinatario}: {mensagem}")
+                entrada_mensagem.delete(0, tk.END)
+            else:
+                atualizar_interface("Erro: Cliente não encontrado.")
+        except Exception as e:
+            atualizar_interface(f"Erro ao enviar mensagem: {e}")
     else:
-        print("Cliente não selecionado ou mensagem vazia.")
+        atualizar_interface("Erro: Cliente não selecionado ou mensagem vazia.")
                 
 # muda a interface
 def atualizar_interface(mensagem):
@@ -66,11 +74,20 @@ def atualizar_menu_clientes():
     for endereco in clientes_conectados.keys():
         menu.add_command(label=endereco, command=tk._setit(cliente_selecionado, endereco))
 
+def encerrar_servidor():
+    atualizar_interface("Encerrando servidor e desconectando todos os clientes...")
+    for cliente_socket in list(clientes_conectados.values()):
+        cliente_socket.close()
+    if server_socket:
+        server_socket.close()
+    print('Conexão encerrada')
+    os._exit(0)
+
 
 # elementos da interface
 janela = tk.Tk()
 janela.title("Servidor de Chat - Versão 2")
-janela.geometry("500x500")
+janela.geometry("500x600")
 caixa_texto = tk.Text(janela, state="disabled", wrap="word")
 caixa_texto.pack(padx=10, pady=10, expand=True, fill="both")
 cliente_selecionado = tk.StringVar(janela)
@@ -81,6 +98,8 @@ entrada_mensagem = tk.Entry(janela, width=50)
 entrada_mensagem.pack(padx=10, pady=5)
 enviar_button = tk.Button(janela, text="Enviar", command=enviar_mensagens)
 enviar_button.pack(pady=5)
+desconectar = tk.Button(janela, text="Encerrar", command=encerrar_servidor)
+desconectar.pack(pady=5)
 
 # iniciar o servidor
 Thread(target=iniciar_servidor).start()

@@ -1,6 +1,7 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 import tkinter as tk
+import os
 
 # Cria o socket
 s = socket(AF_INET, SOCK_STREAM)
@@ -12,19 +13,26 @@ s.connect(('127.0.0.1', 8000))
 # Recebe uma mensagem do servidor
 def receber_mensagens(s):
     while True:
-        mensagem = s.recv(1500).decode()
-        atualizar_interface(mensagem)
+        try:
+            mensagem = s.recv(1500).decode()
+            atualizar_interface(f"Servidor: {mensagem}")
+        except (ConnectionResetError, ConnectionAbortedError):
+            atualizar_interface("Conexão encerrada.")
+            break
 
 # envia mensagem
 def enviar_menssagens():
     mensagem = caixa_texto.get()
     if mensagem:
         s.send(mensagem.encode())
+        atualizar_interface(f"Você: {mensagem}")
         caixa_texto.delete(0, tk.END)
         
 # muda a interface
 def atualizar_interface(mensagem):
+    mensagens_box.config(state="normal")
     mensagens_box.insert(tk.END, mensagem + "\n")
+    mensagens_box.config(state="disabled")
     mensagens_box.see(tk.END)  # Rola a barra de rolagem para o final
 
 # acaba a conexão
@@ -32,6 +40,7 @@ def desconectar():
     s.close()
     print("Desconectado do servidor.")
     janela.quit()
+    os._exit(0)
 
 # elementos da interface
 janela = tk.Tk()

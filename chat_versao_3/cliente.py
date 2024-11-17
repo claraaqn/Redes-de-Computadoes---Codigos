@@ -32,7 +32,6 @@ def atualizar_interface(mensagem):
     mensagens_box.config(state="normal")
     mensagens_box.insert(tk.END, mensagem + "\n")
     mensagens_box.config(state="disabled")
-    mensagens_box.see(tk.END)
     mensagens_box.see(tk.END)  # Rola a barra de rolagem para o final
 
 # acaba a conexão
