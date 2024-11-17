@@ -1,4 +1,4 @@
-# Sistema de Chat Cliente-Servidor com Sockets em Python
+# Redes de Computadores com Python
 
 Este projeto foi desenvolvido como parte da disciplina de Redes de Computadores utilizando sockets em Python. 
 A primeira aplicação inicia uma conexão servidor cliente, na qual eles conversam entre si.
