@@ -10,6 +10,8 @@ A terceira aplicação inicia uma conexão entre clientes passando pelo servidor
 - Envio e recebimento de mensagens em tempo real.
 - Suporte a múltiplos clientes conectados simultaneamente.
 - Interface gráfica desenvolvida com Tkinter.
+- Desenvolvimento de um Cliente DNS.
+- Configurações de protocolos TCP e UDP.
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
 
